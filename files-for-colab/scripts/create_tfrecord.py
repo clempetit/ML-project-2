@@ -1,7 +1,7 @@
 """ TFRecord generator
 Generates tfrecord from MOT17 folders (containing video frames) and det.txt file (containing detections coordinates for each frame)
 
-usage: create_tfrecord.py [-h] [-i VIDEOS_DIR] [-o OUTPUT_PATH] [-l LABELS_PATH] [-f FREQUENCY]
+usage: create_tfrecord.py [-h] [VIDEOS_DIR] [OUTPUT_PATH] [LABELS_PATH] [-f FREQUENCY]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -135,11 +135,11 @@ def main(_):
         if(not video.startswith("MOT17-")):
             continue
 
-        video_path = os.path.join(args.all_vid_path, video)
+        video_path = os.path.join(args.videos_dir, video, "")
         frame_boxes_dict = create_boxes_dict(video_path)
         
         # select images and write corresponding tf examples to tfrecord
-        images_dir_path = os.path.join(args.all_vid_path, video, "img1", "")
+        images_dir_path = os.path.join(video_path, "img1", "")
         images = sorted(os.listdir(images_dir_path))
         for image_name in images:
             # image names of the form "000001.jpg", with always less than 10000 images per video
@@ -152,7 +152,7 @@ def main(_):
 
                     old_image_path = os.path.join(images_dir_path, image_name)
                     new_image_path = os.path.join(images_dir_path, new_image_name)
-                    os.rename(old_image_path + image_name, new_image_path)
+                    os.rename(old_image_path, new_image_path)
 
                     tf_example = create_tf_example(boxes, new_image_path, new_image_name)
                     writer.write(tf_example.SerializeToString())
