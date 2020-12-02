@@ -9,12 +9,12 @@ optional arguments:
             Gap between images to be kept in each video
 
 required arguments:
-  -i VIDEOS_DIR
-            Path to the folder containing MOT17 folders (where the input images and det.txt files are stored)
-  -o OUTPUT_PATH
-            Path of output TFRecord (.record) file.
-  -l LABELS_PATH, --labels_path LABELS_PATH
-            Path to the labels (.pbtxt) file.
+  VIDEOS_DIR
+        Path to the folder containing MOT17 folders (where the input images and det.txt files are stored)
+  OUTPUT_PATH
+        Path of output TFRecord (.record) file.
+  LABELS_PATH, --labels_path LABELS_PATH
+        Path to the labels (.pbtxt) file.
 
 """
 
@@ -30,9 +30,9 @@ from object_detection.utils import dataset_util, label_map_util
 from collections import namedtuple
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-i", "videos_dir", type=str, help="Path to the folder containing MOT17 folders (where the input images and det.txt files are stored)")
-parser.add_argument("-o", "output_path", type=str, help="Path of output TFRecord (.record) file.")
-parser.add_argument("-l", "labels_path", type=str, help="Path to the labels (.pbtxt) file.")
+parser.add_argument("videos_dir", type=str, help="Path to the folder containing MOT17 folders (where the input images and det.txt files are stored)")
+parser.add_argument("output_path", type=str, help="Path of output TFRecord (.record) file.")
+parser.add_argument("labels_path", type=str, help="Path to the labels (.pbtxt) file.")
 parser.add_argument("-f", "--frequency", type=int, default=10, help="Gap between images to be kept in each video")
 args = parser.parse_args()
                     
