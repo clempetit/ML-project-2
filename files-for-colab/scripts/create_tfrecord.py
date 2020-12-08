@@ -147,6 +147,8 @@ def main(_):
                 image_id = int(image_name[-8:-4])
                 if((image_id-1) % args.frequency == 0):
                     boxes = frame_boxes_dict.get(image_id)
+                    if (boxes is None):
+                        continue
                     # rename image to avoid conflict between image names of different videos
                     new_image_name = str(int(video[6:8])) + image_name[-8:]
 
