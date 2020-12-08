@@ -126,7 +126,7 @@ def create_tf_example(boxes, image_path, image_name):
     return tf_example
 
 
-def main(_):
+def main():
 
     writer = tf.python_io.TFRecordWriter(args.output_path)
 
@@ -163,4 +163,4 @@ def main(_):
     print('Successfully created the TFRecord file: {}'.format(args.output_path))
 
 if __name__ == '__main__':
-    tf.app.run()
+    main()
