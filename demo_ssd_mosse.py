@@ -34,6 +34,7 @@ import argparse
 import cv2
 import numpy as np
 import time
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import tensorflow as tf
 from object_detection.utils import config_util
 from object_detection.builders import model_builder
@@ -55,7 +56,7 @@ args = parser.parse_args()
 configs = config_util.get_configs_from_pipeline_file(args.config)
 detection_model = model_builder.build(model_config=configs['model'], is_training=False)
 ckpt = tf.compat.v2.train.Checkpoint(model=detection_model)
-ckpt.restore(os.path.join(tf.train.latest_checkpoint(args.cktp))).expect_partial()
+ckpt.restore(os.path.join(tf.train.latest_checkpoint(args.ckpt))).expect_partial()
 
 @tf.function
 def detect(image_tensor):
@@ -152,8 +153,8 @@ def run():
         if(args.display):
             cv2.imshow(cv2.resize(image_np, (disp_width, disp_height)))
             #cv2_imshow(cv2.resize(image_np, (disp_width, disp_height)))
-        if(not args.ouput is None):
-            cv2.imwrite(args.output + image_name, image_np)
+        if(not args.output is None):
+            cv2.imwrite(join(args.output, image_name), image_np)
         
         i += 1
 
