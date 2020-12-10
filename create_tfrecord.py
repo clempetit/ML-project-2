@@ -1,41 +1,37 @@
 """ TFRecord generator
 Generates tfrecord from MOT17 folders (containing video frames) and det.txt file (containing detections coordinates for each frame)
 
-usage: create_tfrecord.py [-h] [VIDEOS_DIR] [OUTPUT_PATH] [LABELS_PATH] [-f FREQUENCY]
+usage: create_tfrecord.py [VIDEOS_DIR] [OUTPUT_PATH] [LABELS_PATH] [-f FREQUENCY]
 
 optional arguments:
-  -h, --help            show this help message and exit
-  -f FREQUENCY
+    -f FREQUENCY
             Gap between images to be kept in each video
 
 required arguments:
-  VIDEOS_DIR
+    VIDEOS_DIR
         Path to the folder containing MOT17 folders (where the input images and det.txt files are stored)
-  OUTPUT_PATH
+    OUTPUT_PATH
         Path of output TFRecord (.record) file.
-  LABELS_PATH, --labels_path LABELS_PATH
+    LABELS_PATH, --labels_path LABELS_PATH
         Path to the labels (.pbtxt) file.
 
 """
 
 import os
-import glob
-import io
 import argparse
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'    # Suppress TensorFlow logging (1)
+import io
 import tensorflow.compat.v1 as tf
 from PIL import Image
 from object_detection.utils import dataset_util, label_map_util
-from collections import namedtuple
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("videos_dir", type=str, help="Path to the folder containing MOT17 folders (where the input images and det.txt files are stored)")
 parser.add_argument("output_path", type=str, help="Path of output TFRecord (.record) file.")
 parser.add_argument("labels_path", type=str, help="Path to the labels (.pbtxt) file.")
 parser.add_argument("-f", "--frequency", type=int, default=10, help="Gap between images to be kept in each video")
-args = parser.parse_args()
-                    
+args = parser.parse_args()                  
+
 
 def create_boxes_dict(video_path):
     '''Creates a dictionary of boxes detected in every frame (only for frames that are to be selected).
@@ -63,7 +59,6 @@ def create_boxes_dict(video_path):
             frame_boxes_dict.setdefault(frame_index, []).append(parsed_line[2:6])
     
     return frame_boxes_dict
-
 
 def create_tf_example(boxes, image_path, image_name):
     '''Creates a tf example for the given image and its detection boxes
@@ -145,17 +140,16 @@ def main():
             # image names of the form "000001.jpg", with always less than 10000 images per video
             if image_name[-4:] == ".jpg":
                 image_id = int(image_name[-8:-4])
+                # rename image to avoid conflict between image names of different videos
+                new_image_name = str(int(video[6:8])) + image_name
+                old_image_path = os.path.join(images_dir_path, image_name)
+                new_image_path = os.path.join(images_dir_path, new_image_name)
+                os.rename(old_image_path, new_image_path)
+
                 if((image_id-1) % args.frequency == 0):
                     boxes = frame_boxes_dict.get(image_id)
                     if (boxes is None):
                         continue
-                    # rename image to avoid conflict between image names of different videos
-                    new_image_name = str(int(video[6:8])) + image_name[-8:]
-
-                    old_image_path = os.path.join(images_dir_path, image_name)
-                    new_image_path = os.path.join(images_dir_path, new_image_name)
-                    os.rename(old_image_path, new_image_path)
-
                     tf_example = create_tf_example(boxes, new_image_path, new_image_name)
                     writer.write(tf_example.SerializeToString())
 
