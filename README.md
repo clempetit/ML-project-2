@@ -10,7 +10,7 @@ conda create -n tensorflow pip python=3.8
 pip install tensorflow
 
 #install evrything required by the object-detection API
-cd models/research
+cd tensorflow_models/research
 protoc object_detection/protos/*.proto --python_out=.
 cp object_detection/packages/tf2/setup.py .
 pip install .
