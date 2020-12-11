@@ -18,7 +18,7 @@ optional arguments:
 
 required arguments:
     INPUT
-        Path to the folder containing MOT17 folders (where the input images and det.txt files are stored).
+        Path to the input video, must either a directory containing jpg files, or an .mp4 file.
     
     CONFIG
         Path to the pipeline.config file used for training the detection model.
@@ -43,7 +43,7 @@ from object_detection.builders import model_builder
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("input", type=str, help="Path to the input video, must either a directory containing images or a .mp4 file.")
+parser.add_argument("input", type=str, help="Path to the input video, must either a directory containing jpg files, or an .mp4 file.")
 parser.add_argument("config", type=str, help="Path to the pipeline.config file used for training the detection model.")
 parser.add_argument("ckpt", type=str, help="Path to directory containing training checkpoints.")
 parser.add_argument("-f", "--det_freq", type=int, default=10, help="Frequency at which to perform detections.")
@@ -75,7 +75,7 @@ def run():
 
     # Initialize capture
     if isdir(args.input):
-        cap = cv2.VideoCapture(join(args.input, "*.jpg"))
+        cap = cv2.VideoCapture(join(args.input, "%06d.jpg"))
     else :
         cap = cv2.VideoCapture(args.input)
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
