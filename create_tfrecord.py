@@ -141,17 +141,15 @@ def main():
             # image names of the form "000001.jpg", with always less than 10000 images per video
             if image_name[-4:] == ".jpg":
                 image_id = int(image_name[-8:-4])
-                # rename image to avoid conflict between image names of different videos
-                new_image_name = str(int(video[6:8])) + image_name
-                old_image_path = os.path.join(images_dir_path, image_name)
-                new_image_path = os.path.join(images_dir_path, new_image_name)
-                os.rename(old_image_path, new_image_path)
 
                 if((image_id-1) % args.frequency == 0):
                     boxes = frame_boxes_dict.get(image_id)
                     if (boxes is None):
                         continue
-                    tf_example = create_tf_example(boxes, new_image_path, new_image_name)
+                    image_path = os.path.join(images_dir_path, image_name)
+                    # add video id to image name in order to avoid conflict between image names of different videos
+                    new_image_name = str(int(video[6:8])) + image_name
+                    tf_example = create_tf_example(boxes, image_path, new_image_name)
                     writer.write(tf_example.SerializeToString())
 
     writer.close()
