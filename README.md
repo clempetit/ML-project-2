@@ -26,10 +26,12 @@ cd tensorflow_models/research
 protoc object_detection/protos/*.proto --python_out=.
 cp object_detection/packages/tf2/setup.py .
 pip install .
+pip install opencv-contrib-python -U
 ```
 
 WARNING : cv2.MultiTracker_create() will be used for tracking, and is present only in package opencv-contrib-python (not in opencv-python, that may be installed as well by default).
-If an error occur while calling MultiTracker_create(), uninstall opencv-python and opencv-contrib-python, and reinstall opencv-contrib-python only. Alternatively, update open-cv-python.
+If an error occur while calling MultiTracker_create(), uninstall opencv-python and opencv-contrib-python, and reinstall opencv-contrib-python only.
 ```bash
-pip install opencv-contrib-python -U
+pip uninstall opencv-contrib-python
+pip install opencv-contrib-python
 ```
