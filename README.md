@@ -41,6 +41,8 @@ pip install opencv-contrib-python
 
 We included in the repo a trained model (see ckpt-6 in the /training/trained-model directory). If you want to run the demo directly, you can skip this section and go to the next section "Demo".
 
+If you want to run the training, please start by deleting every the file under training/trained-models.
+
 For the different .py scripts to be run, a description of the arguments is present in the respective files.
 
 First, we need to convert the train and test data provided by MOT challenge into TFRecords.
@@ -55,7 +57,7 @@ Then, we need to create a customized pipeline.config file for our specific train
 !python create_config.py training/pre-trained-model/ssd_mobilenet_v2_fpnlite_320x320_coco17_tpu-8 training/TFRecords/label_map.pbtxt training/TFRecords training/trained-model
 ```
 
-Now we are ready to run the training.
+Now we are ready to run the training. Depending on the number of steps that you specify (in the following it is set to 5000), and the batch size (4 by default), the trainig may take some time. The program prints the progression at every 100 steps.
 ```bash
 !python tensorflow_models/research/object_detection/model_main_tf2.py --model_dir training/trained-model/ --pipeline_config_path training/trained-model/pipeline.config --num_train_steps 5000
 ```
