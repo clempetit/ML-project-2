@@ -1,7 +1,7 @@
 """ Demo of SSD detection with MOSSE tracking
 Performs detection (at a specified frequency) and tracking on a given video.
 
-usage: demo_ssd_mosse.py [INPUT] [CONFIG] [CKPT] [DET_FREQ] [DET_THRESHOLD] [OUTPUT] [LIVE_DISPLAYING]
+usage: demo_ssd_mosse.py [INPUT] [TRAINED_MODEL] [DET_FREQ] [DET_THRESHOLD] [OUTPUT] [LIVE_DISPLAYING]
 
 optional arguments:
     -f DET_FREQ
@@ -20,11 +20,8 @@ required arguments:
     INPUT
         Path to the input video, must either a directory containing jpg files, or an .mp4 file.
     
-    CONFIG
+    TRAINED_MODEL
         Path to the pipeline.config file used for training the detection model.
-
-    CKPT
-        Path to directory containing training checkpoints.
 
 """
 
@@ -44,8 +41,7 @@ from object_detection.builders import model_builder
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input", type=str, help="Path to the input video, must either a directory containing jpg files, or an .mp4 file.")
-parser.add_argument("config", type=str, help="Path to the pipeline.config file used for training the detection model.")
-parser.add_argument("ckpt", type=str, help="Path to directory containing training checkpoints.")
+parser.add_argument("trained_model", type=str, help="Path to the pipeline.config file used for training the detection model.")
 parser.add_argument("-f", "--det_freq", type=int, default=10, help="Frequency at which to perform detections.")
 parser.add_argument("-dt", "--det_thld", type=float, default=0.4, help="Minimum required score for detections to be considered.")
 parser.add_argument("-o", "--output", type=str, help="Path to output directory.")
@@ -53,10 +49,11 @@ parser.add_argument("-d", "--display", action='store_true', help="Specify if res
 args = parser.parse_args()
 
 # Build a detection model from the pipeline config, and restore last checkpoint
-configs = config_util.get_configs_from_pipeline_file(args.config)
+configs = config_util.get_configs_from_pipeline_file(os.path.join(args.trained_model, "pipeline.config"))
 detection_model = model_builder.build(model_config=configs['model'], is_training=False)
 ckpt = tf.compat.v2.train.Checkpoint(model=detection_model)
-ckpt.restore(os.path.join(tf.train.latest_checkpoint(args.ckpt))).expect_partial()
+config_path = os.path.join(args.trained_model, "pipeline.config")
+ckpt.restore(tf.train.latest_checkpoint(config_path)).expect_partial()
 
 @tf.function
 def detect(image_tensor):

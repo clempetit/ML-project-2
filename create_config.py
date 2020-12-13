@@ -1,4 +1,4 @@
-'''Generates custom pipeline config for SSD model training
+'''Generates customized pipeline config for SSD model training
 
 usage : create_config.py [PRE_TRAINED_MODEL] [LABEL_MAP] [TFRECORD] [TRAINED_MODEL] [BATCH_SIZE]
 
@@ -35,8 +35,8 @@ parser.add_argument("trained_model", type=str, help="Path of the trained model's
 parser.add_argument("-b", "--batch_size", type=int, default=4, help="Batch size for the training.")
 args = parser.parse_args()
 
-CONFIG_PATH = os.join(args.pre_trained_model, "pipeline.config")
-STARTING_CKPT_PATH = os.join(args.pre_trained_model, "checkpoint/ckpt-0")
+CONFIG_PATH = os.path.join(args.pre_trained_model, "pipeline.config")
+STARTING_CKPT_PATH = os.path.join(args.pre_trained_model, "checkpoint/ckpt-0")
 
 def custom_config():
     custom_config = pipeline_pb2.TrainEvalPipelineConfig()
@@ -54,11 +54,11 @@ def custom_config():
 
     # Paths to label map and tf record for training
     custom_config.train_input_reader.label_map_path= args.label_map
-    custom_config.train_input_reader.tf_record_input_reader.input_path[:] = [os.join(args.TFRecord + 'train.record')]
+    custom_config.train_input_reader.tf_record_input_reader.input_path[:] = [os.path.join(args.TFRecord + 'train.record')]
 
     # Paths to label map and tf record for evaluation
     custom_config.eval_input_reader[0].label_map_path = args.label_map
-    custom_config.eval_input_reader[0].tf_record_input_reader.input_path[:] = [os.join(args.TFRecord + 'test.record')]
+    custom_config.eval_input_reader[0].tf_record_input_reader.input_path[:] = [os.path.join(args.TFRecord + 'test.record')]
 
     # As we are using Google's GPUs (Tesla T4, P100...), large batch size will improve performances
     custom_config.train_config.batch_size = args.batch_size
@@ -66,6 +66,7 @@ def custom_config():
     custom_config_str = text_format.MessageToString(custom_config)                                                                                                                                                                                                        
     with tf.io.gfile.GFile(args.trained_model + '/pipeline.config', "wb") as f:                                                                                                                                                                                                                   
         f.write(custom_config_str)
+    print("Successfully created the pipeline config.")
 
 if __name__ == '__main__':
     custom_config()
