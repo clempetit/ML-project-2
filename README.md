@@ -63,11 +63,10 @@ Now we are ready to run the training.
 ## Demo
 
 In order to test our model, simply run the following script. You have the choice to save the results with the -o flag and/or to visualize them in real time with the -d flag.
-Example :
 
 ```bash
 # saves the results in /results/ directory :
-!python demo_ssd_mosse.py People.mp4 training/trained-model/ -o {RESULT_PATH}
+!python demo_ssd_mosse.py People.mp4 training/trained-model/ -o /results/
 
 # display the images in real time.
 !python demo_ssd_mosse.py People.mp4 training/trained-model/ -d
