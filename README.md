@@ -1,7 +1,7 @@
 
 # Machine Learning Project 2 : Multi-object detection and tracking
 
-If you are not running on macOS, some steps of the following configuration may fail. If you encounter problems or simply want to avoid all the configuration on your computer, you can simply run the attached notebook "Project_2_ML.ipynb" and got through the steps.
+If you are not running on macOS, some steps of the following configuration may fail. If you encounter problems or simply want to avoid all the configuration on your computer, you can simply run the attached notebook "Project_2_ML.ipynb" on Google Collaboratory and go through the steps.
 
 ## Installation on Mac OS: 
 
