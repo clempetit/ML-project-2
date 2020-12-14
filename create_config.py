@@ -54,11 +54,11 @@ def custom_config():
 
     # Paths to label map and tf record for training
     custom_config.train_input_reader.label_map_path= args.label_map
-    custom_config.train_input_reader.tf_record_input_reader.input_path[:] = [os.path.join(args.TFRecord + 'train.record')]
+    custom_config.train_input_reader.tf_record_input_reader.input_path[:] = [os.path.join(args.TFRecord, 'train.record')]
 
     # Paths to label map and tf record for evaluation
     custom_config.eval_input_reader[0].label_map_path = args.label_map
-    custom_config.eval_input_reader[0].tf_record_input_reader.input_path[:] = [os.path.join(args.TFRecord + 'test.record')]
+    custom_config.eval_input_reader[0].tf_record_input_reader.input_path[:] = [os.path.join(args.TFRecord, 'test.record')]
 
     # As we are using Google's GPUs (Tesla T4, P100...), large batch size will improve performances
     custom_config.train_config.batch_size = args.batch_size

@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("videos_dir", type=str, help="Path to the folder containing MOT17 folders (where the input images and det.txt files are stored)")
 parser.add_argument("output_path", type=str, help="Path of output TFRecord (.record) file.")
 parser.add_argument("labels_path", type=str, help="Path to the labels (.pbtxt) file.")
-parser.add_argument("-f", "--frequency", type=int, default=10, help="Gap between images to be kept in each video")
+parser.add_argument("-f", "--frequency", type=int, default=1, help="Gap between images to be kept in each video")
 args = parser.parse_args()                  
 
 
