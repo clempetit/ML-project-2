@@ -1,7 +1,14 @@
 """ Demo of SSD detection with MOSSE tracking
 Performs detection (at a specified frequency) and tracking on a given video.
 
-usage: demo_ssd_mosse.py [INPUT] [TRAINED_MODEL] [DET_FREQ] [DET_THRESHOLD] [OUTPUT] [LIVE_DISPLAYING]
+usage: demo_ssd_mosse.py [INPUT] [TRAINED_MODEL] [-f DET_FREQ] [-dt DET_THRESHOLD] [-o OUTPUT] [-d DISPLAY]
+
+required arguments:
+    INPUT
+        Path to the input video, must either a directory containing jpg files, or an .mp4 file.
+    
+    TRAINED_MODEL
+        Path to the pipeline.config file used for training the detection model.
 
 optional arguments:
     -f DET_FREQ
@@ -13,16 +20,8 @@ optional arguments:
     -o OUTPUT
             Path to output directory. If a path is specified, results will be saved there.
     
-    -ld LIVE_DISPLAYING
+    -d DISPLAY
             Specify if results must be displayed in real time.
-
-required arguments:
-    INPUT
-        Path to the input video, must either a directory containing jpg files, or an .mp4 file.
-    
-    TRAINED_MODEL
-        Path to the pipeline.config file used for training the detection model.
-
 """
 
 import os
@@ -52,8 +51,8 @@ args = parser.parse_args()
 configs = config_util.get_configs_from_pipeline_file(os.path.join(args.trained_model, "pipeline.config"))
 detection_model = model_builder.build(model_config=configs['model'], is_training=False)
 ckpt = tf.compat.v2.train.Checkpoint(model=detection_model)
-config_path = os.path.join(args.trained_model, "pipeline.config")
-ckpt.restore(tf.train.latest_checkpoint(config_path)).expect_partial()
+ckpt_path = args.trained_model
+ckpt.restore(tf.train.latest_checkpoint(ckpt_path)).expect_partial()
 
 @tf.function
 def detect(image_tensor):

@@ -30,7 +30,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument("videos_dir", type=str, help="Path to the folder containing MOT17 folders (where the input images and det.txt files are stored)")
 parser.add_argument("output_path", type=str, help="Path of output TFRecord (.record) file.")
 parser.add_argument("labels_path", type=str, help="Path to the labels (.pbtxt) file.")
-parser.add_argument("-f", "--frequency", type=int, default=1, help="Gap between images to be kept in each video")
 args = parser.parse_args()                  
 
 
@@ -55,9 +54,8 @@ def create_boxes_dict(video_path):
     for line in det_lines:
         parsed_line = [round(float(elem)) for elem in line.split(",")]
         frame_index = parsed_line[0]
-        if((frame_index-1) % args.frequency == 0):
-            # append x,y,w,h to dict
-            frame_boxes_dict.setdefault(frame_index, []).append(parsed_line[2:6])
+        # append x,y,w,h to dict
+        frame_boxes_dict.setdefault(frame_index, []).append(parsed_line[2:6])
     
     return frame_boxes_dict
 
@@ -141,16 +139,14 @@ def main():
             # image names of the form "000001.jpg", with always less than 10000 images per video
             if image_name[-4:] == ".jpg":
                 image_id = int(image_name[-8:-4])
-
-                if((image_id-1) % args.frequency == 0):
-                    boxes = frame_boxes_dict.get(image_id)
-                    if (boxes is None):
-                        continue
-                    image_path = os.path.join(images_dir_path, image_name)
-                    # add video id to image name in order to avoid conflict between image names of different videos
-                    new_image_name = str(int(video[6:8])) + image_name
-                    tf_example = create_tf_example(boxes, image_path, new_image_name)
-                    writer.write(tf_example.SerializeToString())
+                boxes = frame_boxes_dict.get(image_id)
+                if (boxes is None):
+                    continue
+                image_path = os.path.join(images_dir_path, image_name)
+                # add video id to image name in order to avoid conflict between image names of different videos
+                new_image_name = str(int(video[6:8])) + image_name
+                tf_example = create_tf_example(boxes, image_path, new_image_name)
+                writer.write(tf_example.SerializeToString())
 
     writer.close()
     print('Successfully created the TFRecord file: {}'.format(args.output_path))

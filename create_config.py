@@ -2,10 +2,6 @@
 
 usage : create_config.py [PRE_TRAINED_MODEL] [LABEL_MAP] [TFRECORD] [TRAINED_MODEL] [BATCH_SIZE]
 
-optional arguments:
-    -b BATCH_SIZE
-        Batch size for the training.
-
 required arguments:
     PRE_TRAINED_MODEL
         Path of the pre-trained model's directory, containing the config file and the training checkpoint 0.
@@ -18,6 +14,10 @@ required arguments:
 
     TRAINED_MODEL
         Path of the trained model's directory.
+
+optional arguments:
+    -b BATCH_SIZE
+        Batch size for the training.
 '''
 
 import os
