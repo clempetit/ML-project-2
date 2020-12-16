@@ -103,12 +103,11 @@ Note that reducing the number of steps would of course make the model less accur
 
 ## Demo
 Please change your directory to the top-level directory (where our scripts are located).
-In order to test our model, with either MOSSE or DeepSORT tracking, you can simply run one of the two following scripts. The scripts take as input either a .mp4 file or a folder containing .jpg files. You have the choice to save the results with the `-o` flag and/or to visualize them in real time with the `-d` flag (please note that the latter does not work on Google Colab). Some other options are documented inside the scripts.
+In order to test our trained detection model, with either MOSSE or DeepSORT tracking, you can simply run one of the two following scripts. The scripts take as input either a .mp4 file or a folder containing .jpg files. You have the choice to save the results with the `-o` flag and/or to visualize them in real time with the `-d` flag (please note that the latter does not work on Google Colab). Some other options are documented inside the scripts.
 
 SSD detection with MOSSE tracking (this script takes in addition, as argument, the `trained-model` directory) :
 ```bash
-mkdir results
-# saves the results in an empty results/ directory :
+# save the results in an empty results/ directory :
 rm -r results; mkdir results
 python demo_ssd_mosse.py People.mp4 training/trained-model/ -o results/
 
@@ -116,9 +115,9 @@ python demo_ssd_mosse.py People.mp4 training/trained-model/ -o results/
 python demo_ssd_mosse.py People.mp4 training/trained-model/ -d
 ```
 
-SSD detection with DeepSORT tracking (this scrit takes in addition, as argument, to path to a DeepSORT model downloaded from the [pythonlessons](https://github.com/pythonlessons/TensorFlow-2.x-YOLOv3/tree/master/model_data) repo) :
+SSD detection with DeepSORT tracking (this scrit takes in addition, as argument, the path to a DeepSORT model that we downloaded from the [pythonlessons](https://github.com/pythonlessons/TensorFlow-2.x-YOLOv3/tree/master/model_data) repo) :
 ```bash
-# saves the results in results/ directory :
+# save the results in an empty results/ directory :
 rm -r results; mkdir results
 python demo_ssd_deepsort.py People.mp4 training/trained-model/ /deep_sort/mars-small128.pb -o results/
 
@@ -128,7 +127,7 @@ python demo_ssd_deepsort.py People.mp4 training/trained-model/ /deep_sort/mars-s
 
 Finally, you can also have a look at a YOLO v3 demo (with KCF tracking), that we had previously written in order to have a first glimpse at object detection, and that we used later to make comparisons with our own SSD model. In order to run this script, you will need first to download the weights [yolov3-spp.weights](https://pjreddie.com/media/files/yolov3-spp.weights) from pjreddie.com (the file weighs about 200MB, which was too big to put inside this repo) and put the file inside the folder yolov3_files :
 ```bash
-# saves the results in results/ directory :
+# save the results in an empty results/ directory :
 rm -r results; mkdir results
 python demo_yolo_kcf.py People.mp4 -o results/
 
