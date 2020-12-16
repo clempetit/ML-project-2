@@ -96,6 +96,8 @@ def run():
 
     fps_arr = []
 
+    i = 0
+
     while True:
         _, frame = cap.read()
         if frame is None:
@@ -163,11 +165,13 @@ def run():
         if(not args.output is None):
             cv2.imwrite(join(args.output, image_name), image_np)
 
+        i += 1
+
     AVG_FPS = np.mean(fps_arr)
     print("Average FPS :", AVG_FPS)
     cap.release()
     cv2.destroyAllWindows()
-    print("finished")
+    print("Finished")
 
 if __name__ == '__main__':
     run()

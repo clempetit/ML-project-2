@@ -21,7 +21,7 @@ Please note that the repo contains all the data that we used (lots of .jpg files
 
 ## Installation :
 
-If you are not running on macOS, some steps of the following configuration may fail. If you encounter problems or simply want to avoid all the configuration on your computer, you can simply run the attached notebook "Project_2_ML.ipynb" on Google Colaboratory and go through the steps. This notebook clones and uses a github repo that is an exact copy of this one, but that we set to public (cloning private repos on Colab is quite tricky).
+If you are not running on macOS, some steps of the following configuration may fail. If you encounter problems or simply want to avoid all the configuration on your computer, you can simply run our Google Colab notebook available at this [link](https://colab.research.google.com/drive/1GQSJPOlUovb52Ol1ssBpKHHROjL_VjwP#scrollTo=LtZz188u0YU_), and go through the steps. We also provided in this repo as "Project_2_ML.ipynb". This notebook clones and uses a github repo that is an exact copy of this one, but that we set to public (cloning private repos on Colab is quite tricky).
 
 Furthermore, Google Colaboratory allows to use powerful CPUs and GPUs, which makes the training and demos faster. If you run the notebook on Google Colab, in the menu, go in Edit > Notebook settings, and select GPU in the "Hardware accelerator" field.
 
