@@ -21,7 +21,7 @@ Please note that the repo contains all the data that we used (lots of .jpg files
 
 ## Installation :
 
-If you are not running on macOS, some steps of the following configuration may fail. If you encounter problems or simply want to avoid all the configuration on your computer, you can simply run the attached notebook "Project_2_ML.ipynb" on Google Colaboratory and go through the steps.
+If you are not running on macOS, some steps of the following configuration may fail. If you encounter problems or simply want to avoid all the configuration on your computer, you can simply run the attached notebook "Project_2_ML.ipynb" on Google Colaboratory and go through the steps. This notebook clones and uses a github repo that is an exact copy of this one, but that we set to public (cloning private repos on Colab is quite tricky).
 
 Furthermore, Google Colaboratory allows to use powerful CPUs and GPUs, which makes the training and demos faster. If you run the notebook on Google Colab, in the menu, go in Edit > Notebook settings, and select GPU in the "Hardware accelerator" field.
 
@@ -52,13 +52,6 @@ pip install .
 pip install opencv-contrib-python -U
 ```
 
-WARNING : cv2.MultiTracker_create() will be used for tracking, and is present only in package opencv-contrib-python (not in opencv-python, that may be installed as well by default).
-If an error occur while calling MultiTracker_create(), uninstall opencv-python and opencv-contrib-python, and reinstall opencv-contrib-python only.
-```bash
-pip uninstall opencv-contrib-python
-pip install opencv-contrib-python
-```
-
 You can test the installation with the following command (still from the tensorflow-models/research directory).
 ```bash
 python object_detection/builders/model_builder_tf2_test.py
@@ -69,6 +62,13 @@ After a little while, it should output something like the following :
 Ran 20 tests in 68.510s
 
 OK (skipped=1)
+```
+
+WARNING : cv2.MultiTracker_create() will be used for tracking, and is present only in package opencv-contrib-python (not in opencv-python, that may be installed as well by default).
+If an error occur while calling MultiTracker_create(), uninstall opencv-python and opencv-contrib-python (if it was already installed), and reinstall opencv-contrib-python only.
+```bash
+pip uninstall opencv-contrib-python
+pip install opencv-contrib-python
 ```
 
 ## Training
@@ -91,10 +91,11 @@ Then, we need to create a customized pipeline.config file for our specific train
 python create_config.py training/pre-trained-models/ssd_mobilenet_v2_fpnlite_320x320_coco17_tpu-8 training/TFRecords/label_map.pbtxt training/TFRecords training/trained-model
 ```
 
-Now we are ready to run the training. This script is provided by the Tensorflow object detection API. Depending on the number of steps that you specify (in the following it is set to 5000), and the batch size (specified in the pipeline configuration above), the trainig may take some time. The program prints the progression at every 100 steps.
+Now we are ready to run the training. This script is provided by the Tensorflow object detection API. Depending on the number of steps that you specify (in the following it is set to 5000), and the batch size (specified in the pipeline configuration above), the training may take some time to complete, especially if you are using only CPU. The program will first print some warnings that can be ignored, and after a little while, it will start to print the progression, at every 100 training steps.
 ```bash
 python tensorflow_models/research/object_detection/model_main_tf2.py --model_dir training/trained-model/ --pipeline_config_path training/trained-model/pipeline.config --num_train_steps 5000
 ```
+Note that reducing the number of steps would of course make the model less accurate, and conversely, too high a value could result in overfitting. After several tries, we estimated that 5000 steps was a good bet.
 
 ## Demo
 
