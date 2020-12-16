@@ -64,11 +64,9 @@ def detect(image_tensor):
 
 def run():
 
-    # Definition of the parameters
+    # Initialize the DeepSORT tracker
     max_cosine_distance = 0.6
     nn_budget = None
-
-    #initialize deep sort object
     model_filename = args.ds_model
     encoder = gdet.create_box_encoder(model_filename, batch_size=1)
     metric = nn_matching.NearestNeighborDistanceMetric("cosine", max_cosine_distance, nn_budget)

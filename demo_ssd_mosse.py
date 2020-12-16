@@ -98,7 +98,7 @@ def run():
         
         image_np = np.array(frame)
 
-        if(i % 10 == 0):
+        if(i % args.det_freq == 0):
             
             image_tensor = tf.convert_to_tensor(np.expand_dims(image_np, 0), dtype=tf.float32)
             detections = detect(image_tensor)
