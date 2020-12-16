@@ -1,6 +1,6 @@
 # Machine Learning Project 2 : Multi-object detection and tracking
 
-Please note that the repo contains all the data that we used (lots of .jpg files and a small .mp4 video), and weighs around 800MB. Hence the cloning may take  several minutes to complete.
+Please note that the repo contains all the data that we used (lots of .jpg files and a small .mp4 video), and weighs around 800MB. Hence the cloning may take a few minutes to complete.
 
 ## Overview of files
 
@@ -25,7 +25,7 @@ If you are not running on macOS, some steps of the following configuration may f
 
 Furthermore, Google Colaboratory allows to use powerful CPUs and GPUs, which makes the training and demos faster. If you run the notebook on Google Colab, in the menu, go in Edit > Notebook settings, and select GPU in the "Hardware accelerator" field.
 
-Note that in order to use GPUs from your own device when running the code in local, some extra setup is required for GPU support, which we did not describe it here.
+Note that in order to use GPUs from your own device when running the code in local, some extra setup is required for GPU support, which we did not describe here.
 
 You will need to run the protocol buffer (protobuf) compiler protoc to generate some python files from the Tensorflow Object Detection API.
 ```bash
@@ -64,9 +64,10 @@ Ran 20 tests in 68.510s
 OK (skipped=1)
 ```
 
-WARNING : cv2.MultiTracker_create() will be used for tracking, and is present only in package opencv-contrib-python (not in opencv-python, that may be installed as well by default).
-If an error occur while calling MultiTracker_create(), uninstall opencv-python and opencv-contrib-python (if it was already installed), and reinstall opencv-contrib-python only.
+WARNING : cv2.MultiTracker_create() will be used for tracking, and is present only in the package opencv-contrib-python (not in opencv-python, that may be installed as well by default).
+If an error occurs while calling MultiTracker_create(), uninstall opencv-python and opencv-contrib-python (if it was already installed), and reinstall opencv-contrib-python only.
 ```bash
+pip uninstall opencv-contrib-python
 pip uninstall opencv-contrib-python
 pip install opencv-contrib-python
 ```
@@ -77,7 +78,7 @@ We included in the repo a trained model (see ckpt-6 in the /training/trained-mod
 
 If you want to run the training, please start by deleting every file under training/trained-model.
 
-Our .py scripts are documented and a description of the arguments is present in the respective files.
+Our .py scripts are documented and indications about the arguments is present in the respective files.
 
 First, we need to convert the train and test data provided by MOT challenge into TFRecords. Please change your directory to the top-level directory (where our scripts are located).
 ```bash

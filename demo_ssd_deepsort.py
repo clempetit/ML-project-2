@@ -1,7 +1,7 @@
 """ Demo of SSD detection with MOSSE tracking
 Performs detection (at a specified frequency) and tracking on a given video.
 
-usage: demo_ssd_mosse.py [INPUT] [TRAINED_MODEL] [-f DET_FREQ] [-dt DET_THRESHOLD] [-o OUTPUT] [-d DISPLAY]
+usage: demo_ssd_mosse.py [INPUT] [TRAINED_MODEL] [-dt DET_THRESHOLD] [-o OUTPUT] [-d DISPLAY]
 
 required arguments:
     INPUT
@@ -10,10 +10,10 @@ required arguments:
     TRAINED_MODEL
         Path to the pipeline.config file used for training the detection model.
 
-optional arguments:
-    -f DET_FREQ
-            Frequency at which to perform detections (for example 10 to perform detection every 10 frames).
+    DS_MODEL
+        Path to the DeepSORT model file.
 
+optional arguments:
     -dt DET_THRESHOLD
             Minimum required score for detections to be considered.
 
@@ -34,14 +34,15 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import tensorflow as tf
 from object_detection.utils import config_util
 from object_detection.builders import model_builder
-#Google Colab does not support cv2.imshow and the following method must be used instead
-#from google.colab.patches import cv2_imshow
-
+from deep_sort import nn_matching
+from deep_sort.detection import Detection
+from deep_sort.tracker import Tracker
+from deep_sort import generate_detections as gdet
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input", type=str, help="Path to the input video, must either a directory containing jpg files, or an .mp4 file.")
 parser.add_argument("trained_model", type=str, help="Path to the pipeline.config file used for training the detection model.")
-parser.add_argument("-f", "--det_freq", type=int, default=10, help="Frequency at which to perform detections.")
+parser.add_argument("ds_model", type=str, help="Path to the DeepSORT model file.")
 parser.add_argument("-dt", "--det_thld", type=float, default=0.4, help="Minimum required score for detections to be considered.")
 parser.add_argument("-o", "--output", type=str, help="Path to output directory.")
 parser.add_argument("-d", "--display", action='store_true', help="Specify if results must be displayed in real time.")
@@ -63,6 +64,16 @@ def detect(image_tensor):
 
 def run():
 
+    # Definition of the parameters
+    max_cosine_distance = 0.6
+    nn_budget = None
+
+    #initialize deep sort object
+    model_filename = args.ds_model
+    encoder = gdet.create_box_encoder(model_filename, batch_size=1)
+    metric = nn_matching.NearestNeighborDistanceMetric("cosine", max_cosine_distance, nn_budget)
+    tracker = Tracker(metric)
+
     # Parameters for info displaying
     FONT = cv2.FONT_HERSHEY_PLAIN
     green = (0, 255, 0)
@@ -80,15 +91,11 @@ def run():
     disp_width = round(0.5*width)
     disp_height = round(0.5*height)
 
-    # initialize OpenCV's special multi-object tracker
-    trackers = cv2.MultiTracker_create()
-
     boxes = []
     scores = []
 
     fps_arr = []
-    i = 0
-    
+
     while True:
         _, frame = cap.read()
         if frame is None:
@@ -97,50 +104,50 @@ def run():
         frame_start_time = time.time()
         
         image_np = np.array(frame)
-
-        if(i % 10 == 0):
-            
-            image_tensor = tf.convert_to_tensor(np.expand_dims(image_np, 0), dtype=tf.float32)
-            detections = detect(image_tensor)
-
-            num_detections = int(detections.pop('num_detections'))
-            detections = {key: value[0, :num_detections].numpy()
-                        for key, value in detections.items()}
-            detections['num_detections'] = num_detections
-            
-            trackers = cv2.MultiTracker_create()
-            mask = detections['detection_scores'] >= args.det_thld
-            scores = ["{:.2f}".format(score) for score in detections['detection_scores'][mask]]
-            boxes = detections['detection_boxes'][mask]
-            
-            for j in range(len(boxes)):
-                ymin,xmin,ymax,xmax = boxes[j]
-                xmin = int(round(xmin * width))
-                ymin = int(round(ymin * height))
-                xmax = int(round(xmax * width))
-                ymax = int(round(ymax * height))
-                w = (xmax - xmin)
-                h = (ymax - ymin)
-                
-                # set a tracker for this box
-                mosse_tracker = cv2.TrackerMOSSE_create()
-                trackers.add(mosse_tracker, frame, (xmin, ymin, w, h))
-                
-                # draw the bounding box and its label on the frame
-                cv2.rectangle(image_np, (xmin, ymin), (xmax, ymax), (0,255,0), 2)
-                cv2.putText(image_np, "person " + str(scores[j]), (xmin, ymin-5), FONT, font_size, green, thickness)
-
-        else :   
-            # grab the updated bounding box coordinates (if any) for each
-            # object that is being tracked
-            _, boxes = trackers.update(frame)
-
-            # loop over the bounding boxes and draw then on the frame
-            for j in range(len(boxes)):
-                x,y,w,h = [int(v) for v in boxes[j]]
-                cv2.rectangle(image_np, (x, y), (x+w, y+h), (0,255,0), 2)
-                cv2.putText(image_np, "person " + str(scores[j]), (x, y-5), FONT, font_size, green, thickness)
         
+        # Detection
+        input_tensor = tf.convert_to_tensor(np.expand_dims(image_np, 0), dtype=tf.float32)
+        detections = detect(input_tensor)
+
+        num_detections = int(detections.pop('num_detections'))
+        detections = {key: value[0, :num_detections].numpy()
+                    for key, value in detections.items()}
+        detections['num_detections'] = num_detections
+        
+        mask = detections['detection_scores'] >= args.det_thld
+        scores = ["{:.2f}".format(score) for score in detections['detection_scores'][mask]]
+        boxes = detections['detection_boxes'][mask]
+        
+        tlwh_boxes = []
+        for j in range(len(boxes)):
+            ymin,xmin,ymax,xmax = boxes[j]
+            xmin = int(round(xmin * width))
+            ymin = int(round(ymin * height))
+            xmax = int(round(xmax * width))
+            ymax = int(round(ymax * height))
+            w = (xmax - xmin)
+            h = (ymax - ymin)
+            tlwh_boxes.append([xmin, ymin, w, h])
+
+        # Tracking
+        features = np.array(encoder(frame, tlwh_boxes))
+        detections = [Detection(bbox, score, feature) for bbox, score, feature in zip(tlwh_boxes, scores, features)]
+        # Pass detections to the deepsort object and obtain the track information.
+        tracker.predict()
+        tracker.update(detections)
+
+        # Obtain info from the tracks and draw then on the frame
+        for track in tracker.tracks:
+            if (not track.is_confirmed()) or (track.time_since_update > 3):
+                continue
+            # Get the corrected/predicted bounding box.
+            bbox = track.to_tlwh()
+            # Get the ID for the particular track.
+            tracking_id = track.track_id
+            x,y,w,h = [int(v) for v in bbox.tolist()]
+            cv2.rectangle(image_np, (x, y), (x+w, y+h), (0,255,0), 2)
+            cv2.putText(image_np, "Person " + str(tracking_id), (x, y-5), FONT, font_size, green, thickness)
+
         # Time for performing detection and write the results on the frame.
         FPS = round(1.0 / (time.time() - frame_start_time), 2)
         fps_arr.append(FPS)
@@ -148,21 +155,19 @@ def run():
         image_name = "img"+str(i)+".jpg"
 
         if(args.display):
-            cv2.imshow("SSD and MOSSE", cv2.resize(image_np, (disp_width, disp_height)))
+            cv2.imshow("SSD and DeepSORT", cv2.resize(image_np, (disp_width, disp_height)))
             #cv2_imshow(cv2.resize(image_np, (disp_width, disp_height)))
             key = cv2.waitKey(1)
             if key==27:
                 break
         if(not args.output is None):
             cv2.imwrite(join(args.output, image_name), image_np)
-        
-        i += 1
 
     AVG_FPS = np.mean(fps_arr)
     print("Average FPS :", AVG_FPS)
     cap.release()
     cv2.destroyAllWindows()
-    print("Finished")
+    print("finished")
 
 if __name__ == '__main__':
     run()
