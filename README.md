@@ -1,9 +1,10 @@
-
 # Machine Learning Project 2 : Multi-object detection and tracking
+
+Please note that the repo contains all the data that we used (lots of .jpg files and a small .mp4 video), and weighs around 800MB. Hence the cloning may take  several minutes to complete.
 
 ## Overview of files
 
-* In the top-level directory, you will the different scripts that we wrote for this project :
+* In the top-level directory, you will find the different scripts that we wrote for this project :
     * `create_tfrecord.py`: A program that generates TFRecords from MOT Challenge data.
     * `create_config.py`: A program that modifies a pre-trained model's default pipeline.config, in order to adapt it to our own model.
     * `demo_ssd_mosse.py`: A demo program that runs SSD detection with MOSSE tracking on a given input video.
@@ -20,8 +21,11 @@
 
 ## Installation :
 
-If you are not running on macOS, some steps of the following configuration may fail. If you encounter problems or simply want to avoid all the configuration on your computer, you can simply run the attached notebook "Project_2_ML.ipynb" on Google Collaboratory and go through the steps.
-Furthermore, Google Collaboratory allows to use powerful CPUs and GPUs, which makes the training and demos faster. If you run the notebook on Google Collab, in the menu, go in Edit > Notebook settings, and select GPU in the "Hardware accelerator" field.\
+If you are not running on macOS, some steps of the following configuration may fail. If you encounter problems or simply want to avoid all the configuration on your computer, you can simply run the attached notebook "Project_2_ML.ipynb" on Google Colaboratory and go through the steps.
+
+Furthermore, Google Colaboratory allows to use powerful CPUs and GPUs, which makes the training and demos faster. If you run the notebook on Google Colab, in the menu, go in Edit > Notebook settings, and select GPU in the "Hardware accelerator" field.
+
+Note that in order to use GPUs from your own device when running the code in local, some extra setup is required for GPU support, which we did not describe it here.
 
 You will need to run the protocol buffer (protobuf) compiler protoc to generate some python files from the Tensorflow Object Detection API.
 ```bash
@@ -30,7 +34,8 @@ brew install protobuf
 
 Create a new virtual environment with anaconda.
 ```bash
-conda create -n tensorflow pip python=3.8
+conda create -n ML_Project2_MOT pip python=3.8
+conda activate ML_Project2_MOT
 ```
 
 install tensorflow
@@ -38,7 +43,7 @@ install tensorflow
 pip install tensorflow
 ```
 
-Install evrything else that is required by the object-detection API.
+Install everything else that is required by the object-detection API. Please start by changing your directory to tensorflow_models/research :
 ```bash
 cd tensorflow_models/research
 protoc object_detection/protos/*.proto --python_out=.
@@ -54,40 +59,52 @@ pip uninstall opencv-contrib-python
 pip install opencv-contrib-python
 ```
 
+You can test the installation with the following command (still from the tensorflow-models/research directory).
+```bash
+python object_detection/builders/model_builder_tf2_test.py
+```
+After a little while, it should output something like the following :
+```bash
+----------------------------------------------------------------------
+Ran 20 tests in 68.510s
+
+OK (skipped=1)
+```
+
 ## Training
 
 We included in the repo a trained model (see ckpt-6 in the /training/trained-model directory). If you want to run the demo directly, you can skip this section and go to the next section "Demo".
 
-If you want to run the training, please start by deleting every file under training/trained-models.
+If you want to run the training, please start by deleting every file under training/trained-model.
 
 Our .py scripts are documented and a description of the arguments is present in the respective files.
 
-First, we need to convert the train and test data provided by MOT challenge into TFRecords.
+First, we need to convert the train and test data provided by MOT challenge into TFRecords. Please change your directory to the top-level directory (where our scripts are located).
 ```bash
-!python create_tfrecord.py images/train/ training/TFRecords/train.record training/TFRecords/label_map.pbtxt -f 10
-!python create_tfrecord.py images/train/ training/TFRecords/test.record training/TFRecords/label_map.pbtxt -f 10
+python create_tfrecord.py images/train/ training/TFRecords/train.record training/TFRecords/label_map.pbtxt
+python create_tfrecord.py images/train/ training/TFRecords/test.record training/TFRecords/label_map.pbtxt
 ```
 
-Then, we need to create a customized pipeline.config file for our specific traing. We will take the default config of the pre-trained model and modify it adequately. The batch size is 4 by default, you can set it to a higher value (e.g. 8 or 16) with flag -b if you are using Google Colab with GPUs.
+Then, we need to create a customized pipeline.config file for our specific training. We will take the default config of the pre-trained model and modify it adequately. The batch size is 4 by default, you can set it to a higher value (e.g. 8 or 16) with flag -b if you are using Google Colab with GPUs.
 
 ```bash
-!python create_config.py training/pre-trained-model/ssd_mobilenet_v2_fpnlite_320x320_coco17_tpu-8 training/TFRecords/label_map.pbtxt training/TFRecords training/trained-model
+python create_config.py training/pre-trained-models/ssd_mobilenet_v2_fpnlite_320x320_coco17_tpu-8 training/TFRecords/label_map.pbtxt training/TFRecords training/trained-model
 ```
 
 Now we are ready to run the training. This script is provided by the Tensorflow object detection API. Depending on the number of steps that you specify (in the following it is set to 5000), and the batch size (specified in the pipeline configuration above), the trainig may take some time. The program prints the progression at every 100 steps.
 ```bash
-!python tensorflow_models/research/object_detection/model_main_tf2.py --model_dir training/trained-model/ --pipeline_config_path training/trained-model/pipeline.config --num_train_steps 5000
+python tensorflow_models/research/object_detection/model_main_tf2.py --model_dir training/trained-model/ --pipeline_config_path training/trained-model/pipeline.config --num_train_steps 5000
 ```
 
 ## Demo
 
-In order to test our model, simply run the following script. You have the choice to save the results with the -o flag and/or to visualize them in real time with the -d flag.
+In order to test our model, simply run the following script. You have the choice to save the results with the -o flag and/or to visualize them in real time with the -d flag (please note that the latter does not work on Google Colab).
 
 ```bash
-!mkdir results
+mkdir results
 # saves the results in results/ directory :
-!python demo_ssd_mosse.py People.mp4 training/trained-model/ -o results/
+python demo_ssd_mosse.py People.mp4 training/trained-model/ -o results/
 
-# display the images in real time.
-!python demo_ssd_mosse.py People.mp4 training/trained-model/ -d
+# display the images in real time. Does not work on Google Colab !
+python demo_ssd_mosse.py People.mp4 training/trained-model/ -d
 ```

@@ -1,11 +1,7 @@
 """ TFRecord generator
 Generates tfrecord from MOT17 folders (containing video frames) and det.txt file (containing detections coordinates for each frame)
 
-usage: create_tfrecord.py [VIDEOS_DIR] [OUTPUT_PATH] [LABELS_PATH] [-f FREQUENCY]
-
-optional arguments:
-    -f FREQUENCY
-            Gap between images to be kept in each video
+usage: create_tfrecord.py [VIDEOS_DIR] [OUTPUT_PATH] [LABELS_PATH]
 
 required arguments:
     VIDEOS_DIR
