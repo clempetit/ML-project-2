@@ -164,7 +164,7 @@ def run():
         image_name = "img"+str(img_ctr)+".jpg"
 
         if(args.display):
-            cv2.imshow("SSD and MOSSE", cv2.resize(img, (disp_width, disp_height)))
+            cv2.imshow("Yolo and KCF", cv2.resize(img, (disp_width, disp_height)))
             #cv2_imshow(cv2.resize(image_np, (disp_width, disp_height)))
             key = cv2.waitKey(1)
             if key==27:

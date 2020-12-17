@@ -119,10 +119,10 @@ SSD detection with DeepSORT tracking (this scrit takes in addition, as argument,
 ```bash
 # save the results in an empty results/ directory :
 rm -r results; mkdir results
-python demo_ssd_deepsort.py People.mp4 training/trained-model/ /deep_sort/mars-small128.pb -o results/
+python demo_ssd_deepsort.py People.mp4 training/trained-model/ deep_sort/mars-small128.pb -o results/
 
 # display the images in real time. Does not work on Google Colab !
-python demo_ssd_deepsort.py People.mp4 training/trained-model/ /deep_sort/mars-small128.pb -d
+python demo_ssd_deepsort.py People.mp4 training/trained-model/ deep_sort/mars-small128.pb -d
 ```
 
 Finally, you can also have a look at a YOLO v3 demo (with KCF tracking), that we had previously written in order to have a first glimpse at object detection, and that we used later to make comparisons with our own SSD model. In order to run this script, you will need first to download the weights [yolov3-spp.weights](https://pjreddie.com/media/files/yolov3-spp.weights) from pjreddie.com (the file weighs about 200MB, which was too big to put inside this repo) and put the file inside the folder `yolov3-files` :
