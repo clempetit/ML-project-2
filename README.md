@@ -123,6 +123,7 @@ python demo_ssd_deepsort.py People.mp4 training/trained-model/ deep_sort/mars-sm
 # display the images in real time. Does not work on Google Colab !
 python demo_ssd_deepsort.py People.mp4 training/trained-model/ deep_sort/mars-small128.pb -d
 ```
+Note that with this version, some "proper tracking" is performed (keeping record of each track's id, i.e. "which person goes where"), and it may take a few frames for a track to be considered as confirmed. This is why no boxes will appear in the two first frames.
 
 Finally, you can also have a look at a YOLO v3 demo (with KCF tracking), that we had previously written in order to have a first glimpse at object detection, and that we used later to make comparisons with our own SSD model. In order to run this script, you will need first to download the weights [yolov3-spp.weights](https://pjreddie.com/media/files/yolov3-spp.weights) from pjreddie.com (the file weighs about 200MB, which was too big to put inside this repo) and put the file inside the folder `yolov3-files` :
 ```bash
