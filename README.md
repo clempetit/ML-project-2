@@ -70,7 +70,7 @@ OK (skipped=1)
 WARNING : cv2.MultiTracker_create() will be used for tracking, and is present only in the package opencv-contrib-python (not in opencv-python, that may be installed as well by default).
 If an error occurs while calling MultiTracker_create(), uninstall opencv-python and opencv-contrib-python (if it was already installed), and reinstall opencv-contrib-python only.
 ```bash
-pip uninstall opencv-contrib-python
+pip uninstall opencv-python
 pip uninstall opencv-contrib-python
 pip install opencv-contrib-python
 ```
