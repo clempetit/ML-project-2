@@ -21,6 +21,7 @@ Please note that the repo contains all the data that we used (lots of .jpg files
 * `People.mp4` can be used for the demo.
 * `Project-2-ML.ipynb` is a notebook you can run on Google Colab. All our work can be simply reproduced with this notebook.
 
+Our .py scripts are documented and indications about the arguments are present in the respective files.
 
 ## Installation :
 
@@ -41,7 +42,7 @@ conda create -n ML_Project2_MOT pip python=3.8
 conda activate ML_Project2_MOT
 ```
 
-install tensorflow
+Install Tensorflow :
 ```bash
 pip install tensorflow
 ```
@@ -81,8 +82,6 @@ We included in the repo a trained model (see ckpt-6 in the /training/trained-mod
 
 If you want to run the training, please start by deleting every file under training/trained-model.
 
-Our .py scripts are documented and indications about the arguments is present in the respective files.
-
 First, we need to convert the train and test data provided by MOT challenge into TFRecords. Please change your directory to the top-level directory (where our scripts are located).
 ```bash
 python create_tfrecord.py images/train/ training/TFRecords/train.record training/TFRecords/label_map.pbtxt
@@ -102,7 +101,7 @@ python tensorflow_models/research/object_detection/model_main_tf2.py --model_dir
 Note that reducing the number of steps would of course make the model less accurate, and conversely, too high a value could result in overfitting. After several tries, we estimated that 5000 steps was a good bet.
 
 ## Demo
-Please change your directory to the top-level directory (where our scripts are located).
+As for the training part, you need to be located in the top-level directory (where our scripts are located).
 In order to test our trained detection model, with either MOSSE or DeepSORT tracking, you can simply run one of the two following scripts. The scripts take as input either a .mp4 file or a folder containing .jpg files. You have the choice to save the results with the `-o` flag and/or to visualize them in real time with the `-d` flag (please note that the latter does not work on Google Colab). Some other options are documented inside the scripts.
 
 SSD detection with MOSSE tracking (this script takes in addition, as argument, the `trained-model` directory) :
