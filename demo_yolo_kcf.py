@@ -1,13 +1,16 @@
 """ Demo of YOLOv3 detection with KCF tracking
 Performs detection (at a specified frequency) and tracking on a given video.
 
-usage: demo_yolo_kcf.py [INPUT] [-o OUTPUT] [-d DISPLAY]
+usage: demo_yolo_kcf.py [INPUT] [-f det_freq] [-o OUTPUT] [-d DISPLAY]
 
 required arguments:
     INPUT
         Path to the input video, must either a directory containing jpg files, or an .mp4 file.
 
 optional arguments:
+    -f DET_FREQ
+            Frequency at which to perform detections (for example 10 to perform detection every 10 frames).
+            
     -o OUTPUT
             Path to output directory. If a path is specified, results will be saved there.
     
@@ -27,6 +30,7 @@ import time
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input", type=str, help="Path to the input video, must either a directory containing jpg files, or an .mp4 file.")
+parser.add_argument("-f", "--det_freq", type=int, default=10, help="Frequency at which to perform detections.")
 parser.add_argument("-o", "--output", type=str, help="Path to output directory.")
 parser.add_argument("-d", "--display", action='store_true', help="Specify if results must be displayed in real time.")
 args = parser.parse_args()
@@ -47,10 +51,10 @@ def run():
     disp_height = round(0.5*height)
 
     # initialize the network with Yolov3 weights and config
-    net = cv2.dnn.readNet('yolov3_files/yolov3-spp.weights', 'yolov3_files/yolov3.cfg')
+    net = cv2.dnn.readNet('yolov3-files/yolov3-spp.weights', 'yolov3-files/yolov3.cfg')
 
     #file containing class names
-    with open('yolov3_files/coco.names', 'r') as f:
+    with open('yolov3-files/coco.names', 'r') as f:
 	    classes = f.read().splitlines()
 
     # initialize OpenCV's special multi-object tracker
